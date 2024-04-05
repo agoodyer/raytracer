@@ -1,8 +1,6 @@
 package main
 
 import (
-	"log"
-	"os"
 	. "raytracer/common"
 	. "raytracer/objects"
 )
@@ -17,10 +15,7 @@ func main() {
 	var cam Camera
 
 	cam.Aspect_ratio = 16.0 / 9.0
-	cam.Image_width = 400
-
-	logger := log.New(os.Stderr, "", 0)
-	logger.Print(world)
+	cam.Image_width = 800
 	cam.Render(&world)
 
 }

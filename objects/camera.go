@@ -3,25 +3,28 @@ package objects
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	. "raytracer/common"
 )
 
 type Camera struct {
-	Aspect_ratio float64
-	Image_width  int
-	// Sample_per_pixel int
-	image_height  int
-	center        Point3
-	pixel00_loc   Point3
-	pixel_delta_u Vec3
-	pixel_delta_v Vec3
+	Aspect_ratio     float64
+	Image_width      int
+	Sample_per_pixel int
+	image_height     int
+	center           Point3
+	pixel00_loc      Point3
+	pixel_delta_u    Vec3
+	pixel_delta_v    Vec3
 }
 
 func (c *Camera) initialize() {
 
 	// c.Aspect_ratio = 1.0
 	// c.Image_width = 100
+
+	c.Sample_per_pixel = 100
 
 	//Calculate image height
 	c.image_height = int(float64(c.Image_width) / c.Aspect_ratio)
@@ -53,23 +56,29 @@ func (c *Camera) Render(world Hittable) {
 
 	logger := log.New(os.Stderr, "", 0)
 
-	logger.Print(world)
-
 	fmt.Printf("P3\n%d %d\n255\n", c.Image_width, c.image_height)
 
 	for j := 0; j < c.image_height; j++ {
 
-		// logger.Printf("Scanlines remaining: %d", c.image_height-j)
+		logger.Printf("Scanlines remaining: %d", c.image_height-j)
 
 		for i := 0; i < c.Image_width; i++ {
 
-			pixel_center := c.pixel00_loc.Add(c.pixel_delta_u.Mult(float64(i)).Add(c.pixel_delta_v.Mult(float64(j))))
-			Ray_direction := pixel_center.Sub(c.center)
-			r := NewRay(c.center, Ray_direction)
-			// logger.Print(c.pixel_delta_u)
-			pixel_color := ray_color(r, world)
+			pixel_color := NewColor(0, 0, 0)
 
-			Write_color(pixel_color)
+			for sample := 0; sample < c.Sample_per_pixel; sample++ {
+				r := c.get_ray(i, j)
+				pixel_color = pixel_color.Add(ray_color(r, world))
+				// logger.Print(pixel_color)
+			}
+
+			// pixel_center := c.pixel00_loc.Add(c.pixel_delta_u.Mult(float64(i)).Add(c.pixel_delta_v.Mult(float64(j))))
+			// Ray_direction := pixel_center.Sub(c.center)
+			// r := NewRay(c.center, Ray_direction)
+			// // logger.Print(c.pixel_delta_u)
+			// pixel_color := ray_color(r, world)
+
+			Write_color(pixel_color, c.Sample_per_pixel)
 
 		}
 
@@ -86,4 +95,26 @@ func ray_color(r Ray, world Hittable) Color {
 	unit_direction := Unit_vector(r.Direction)
 	a := 0.5 * (unit_direction.Y() + 1.0)
 	return NewColor(1.0, 1.0, 1.0).Mult(1.0 - a).Add(NewColor(0.5, 0.7, 1.0).Mult(a))
+}
+
+func (c *Camera) get_ray(i int, j int) Ray {
+
+	pixel_center := c.pixel00_loc.Add(c.pixel_delta_u.Mult(float64(i)).Add(c.pixel_delta_v.Mult(float64(j))))
+	pixel_sample := pixel_center.Add(c.pixel_sample_square())
+
+	ray_origin := c.center
+	ray_direction := pixel_sample.Sub(ray_origin)
+
+	return NewRay(ray_origin, ray_direction)
+	// Ray_direction := pixel_center.Sub(c.center)
+	// r := NewRay(c.center, Ray_direction)
+	// // logger.Print(c.pixel_delta_u)
+	// pixel_color := ray_color(r, world)
+
+}
+
+func (c *Camera) pixel_sample_square() Vec3 {
+	px := -0.5 + rand.Float64()
+	py := -0.5 + rand.Float64()
+	return c.pixel_delta_u.Mult(px).Add(c.pixel_delta_v.Mult(py))
 }
