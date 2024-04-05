@@ -15,7 +15,7 @@ func main() {
 	var cam Camera
 
 	cam.Aspect_ratio = 16.0 / 9.0
-	cam.Image_width = 800
+	cam.Image_width = 400
 	cam.Render(&world)
 
 }

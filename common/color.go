@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"math"
 )
 
 type Color = Vec3
@@ -22,6 +23,10 @@ func Write_color(pixel_color Color, samples_per_pixel int) {
 	g *= scale
 	b *= scale
 
+	r = linear_to_gamma(r)
+	g = linear_to_gamma(g)
+	b = linear_to_gamma(b)
+
 	intensity := NewInterval(0.000, 0.999)
 
 	fmt.Printf("%d %d %d \n",
@@ -30,4 +35,8 @@ func Write_color(pixel_color Color, samples_per_pixel int) {
 		int(256*intensity.Clamp(b)),
 	)
 
+}
+
+func linear_to_gamma(linear_component float64) float64 {
+	return math.Sqrt(linear_component)
 }

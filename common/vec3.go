@@ -2,6 +2,7 @@ package common
 
 import (
 	"math"
+	"math/rand"
 )
 
 type Vec3 struct {
@@ -25,6 +26,8 @@ func (v Vec3) Z() float64 {
 func NewVec3(x float64, y float64, z float64) Vec3 {
 	return Vec3{e: [3]float64{x, y, z}}
 }
+
+var NullVector Vec3 = NewVec3(0, 0, 0)
 
 func NewPoint3(x float64, y float64, z float64) Vec3 {
 	return Point3{e: [3]float64{x, y, z}}
@@ -76,4 +79,36 @@ func Unit_vector(v Vec3) Vec3 {
 	v2 := v.Clone()
 	v2.Div(v.Length())
 	return v2
+}
+
+func RandomClampedVector() Vec3 {
+	return NewVec3(rand.Float64(), rand.Float64(), rand.Float64())
+}
+
+func RandomVector(min float64, max float64) Vec3 {
+	return NewVec3(random_float(min, max), random_float(min, max), random_float(min, max))
+}
+
+func Random_in_unit_sphere() Vec3 {
+	for {
+		p := RandomVector(-1, 1)
+		if p.Length_squared() < 1 {
+			return p
+		}
+	}
+}
+
+func Random_unit_vector() Vec3 {
+	return Unit_vector(Random_in_unit_sphere())
+}
+
+func Random_on_hemisphere(normal Vec3) Vec3 {
+	on_unit_sphere := Random_unit_vector()
+
+	if Dot(on_unit_sphere, normal) > 0.0 {
+		return on_unit_sphere
+	} else {
+		return NullVector.Sub(on_unit_sphere)
+	}
+
 }

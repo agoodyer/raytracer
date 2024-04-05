@@ -17,6 +17,7 @@ type Camera struct {
 	pixel00_loc      Point3
 	pixel_delta_u    Vec3
 	pixel_delta_v    Vec3
+	max_depth        int
 }
 
 func (c *Camera) initialize() {
@@ -24,7 +25,8 @@ func (c *Camera) initialize() {
 	// c.Aspect_ratio = 1.0
 	// c.Image_width = 100
 
-	c.Sample_per_pixel = 100
+	c.Sample_per_pixel = 300
+	c.max_depth = 50
 
 	//Calculate image height
 	c.image_height = int(float64(c.Image_width) / c.Aspect_ratio)
@@ -68,7 +70,7 @@ func (c *Camera) Render(world Hittable) {
 
 			for sample := 0; sample < c.Sample_per_pixel; sample++ {
 				r := c.get_ray(i, j)
-				pixel_color = pixel_color.Add(ray_color(r, world))
+				pixel_color = pixel_color.Add(ray_color(r, c.max_depth, world))
 				// logger.Print(pixel_color)
 			}
 
@@ -86,11 +88,18 @@ func (c *Camera) Render(world Hittable) {
 
 }
 
-func ray_color(r Ray, world Hittable) Color {
+func ray_color(r Ray, depth int, world Hittable) Color {
 	var rec Hit_record
 
-	if world.Hit(r, NewInterval(0, Infinity), &rec) {
-		return rec.Normal.Add(NewColor(1, 1, 1)).Mult(0.5)
+	if depth <= 0 {
+		return NewColor(0, 0, 0)
+	}
+
+	if world.Hit(r, NewInterval(0.001, Infinity), &rec) {
+
+		direction := rec.Normal.Add(Random_unit_vector())
+
+		return ray_color(NewRay(rec.P, direction), depth-1, world).Mult(0.50)
 	}
 	unit_direction := Unit_vector(r.Direction)
 	a := 0.5 * (unit_direction.Y() + 1.0)
@@ -106,11 +115,6 @@ func (c *Camera) get_ray(i int, j int) Ray {
 	ray_direction := pixel_sample.Sub(ray_origin)
 
 	return NewRay(ray_origin, ray_direction)
-	// Ray_direction := pixel_center.Sub(c.center)
-	// r := NewRay(c.center, Ray_direction)
-	// // logger.Print(c.pixel_delta_u)
-	// pixel_color := ray_color(r, world)
-
 }
 
 func (c *Camera) pixel_sample_square() Vec3 {
