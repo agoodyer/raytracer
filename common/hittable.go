@@ -8,7 +8,7 @@ type Hit_record struct {
 }
 
 type Hittable interface {
-	Hit(r Ray, ray_tmin float64, ray_tmax float64, rec *Hit_record) bool
+	Hit(r Ray, ray_t Interval, rec *Hit_record) bool
 }
 
 func (h *Hit_record) Set_face_normal(r Ray, outward_normal Vec3) {
@@ -36,15 +36,15 @@ func (l *Hittable_list) clear() {
 	l.objects = l.objects[:0]
 }
 
-func (l *Hittable_list) Hit(r Ray, ray_tmin float64, ray_tmax float64, rec *Hit_record) bool {
+func (l *Hittable_list) Hit(r Ray, ray_t Interval, rec *Hit_record) bool {
 
 	var temp_rec Hit_record
 	hit_anything := false
-	closest_so_far := ray_tmax
+	closest_so_far := ray_t.Max
 
 	for _, object := range l.objects {
 
-		if object.Hit(r, ray_tmin, closest_so_far, &temp_rec) {
+		if object.Hit(r, NewInterval(ray_t.Min, closest_so_far), &temp_rec) {
 			hit_anything = true
 			closest_so_far = temp_rec.T
 			*rec = temp_rec

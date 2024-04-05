@@ -1,7 +1,8 @@
-package common
+package objects
 
 import (
 	"math"
+	. "raytracer/common"
 )
 
 type Sphere struct {
@@ -9,7 +10,7 @@ type Sphere struct {
 	Radius float64
 }
 
-func (s *Sphere) Hit(r Ray, ray_tmin float64, ray_tmax float64, rec *Hit_record) bool {
+func (s *Sphere) Hit(r Ray, ray_t Interval, rec *Hit_record) bool {
 	oc := r.Origin.Sub(s.Center)
 	a := r.Direction.Length_squared()
 	half_b := Dot(oc, r.Direction)
@@ -25,9 +26,9 @@ func (s *Sphere) Hit(r Ray, ray_tmin float64, ray_tmax float64, rec *Hit_record)
 
 	root := (-half_b - sqrtd) / a
 
-	if root <= ray_tmin || ray_tmax <= root {
+	if !ray_t.Surrounds(root) {
 		root = (-half_b + sqrtd) / a
-		if root <= ray_tmin || ray_tmax <= root {
+		if !ray_t.Surrounds(root) {
 			return false
 		}
 	}

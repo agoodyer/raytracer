@@ -1,75 +1,26 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	. "raytracer/common"
+	. "raytracer/objects"
 )
 
-func Ray_color(r Ray, world Hittable) Color {
-	var rec Hit_record
-
-	if world.Hit(r, 0, Infinity, &rec) {
-		return rec.Normal.Add(NewColor(1, 1, 1)).Mult(0.5)
-	}
-	unit_direction := Unit_vector(r.Direction)
-	a := 0.5 * (unit_direction.Y() + 1.0)
-	return NewColor(1.0, 1.0, 1.0).Mult(1.0 - a).Add(NewColor(0.5, 0.7, 1.0).Mult(a))
-}
-
-// import "fmt"
 func main() {
 
 	var world Hittable_list
 
-	//Image sizing
-	aspect_ratio := 16.0 / 9.0
-	image_width := 400
-
-	//Calculate image height
-	image_height := int(float64(image_width) / aspect_ratio)
-	if image_height < 1 {
-		image_height = 1
-	}
-
 	world.Add(&Sphere{Center: NewPoint3(0, 0, -1), Radius: 0.5})
 	world.Add(&Sphere{Center: NewPoint3(0, -100.5, -1), Radius: 100})
 
-	//Camera
-	focal_length := 1.0
-	viewport_height := 2.0
-	viewport_width := viewport_height * float64(image_width) / float64(image_height)
-	camera_center := NewPoint3(0, 0, 0)
+	var cam Camera
 
-	viewport_u := NewVec3(viewport_width, 0, 0)
-	viewport_v := NewVec3(0, -viewport_height, 0)
-
-	pixel_delta_u := viewport_u.Div(float64(image_width))
-	pixel_delta_v := viewport_v.Div(float64(image_height))
-
-	viewport_upper_left := camera_center.Sub(NewVec3(0, 0, focal_length)).Sub(viewport_u.Div(2)).Sub(viewport_v.Div(2))
-
-	pixel00_loc := viewport_upper_left.Add(pixel_delta_u.Add(pixel_delta_v).Mult(0.5))
+	cam.Aspect_ratio = 16.0 / 9.0
+	cam.Image_width = 400
 
 	logger := log.New(os.Stderr, "", 0)
-
-	fmt.Printf("P3\n%d %d\n255\n", image_width, image_height)
-
-	for j := 0; j < image_height; j++ {
-
-		logger.Printf("Scanlines remaining: %d", image_height-j)
-
-		for i := 0; i < image_width; i++ {
-
-			pixel_center := pixel00_loc.Add(pixel_delta_u.Mult(float64(i)).Add(pixel_delta_v.Mult(float64(j))))
-			Ray_direction := pixel_center.Sub(camera_center)
-			r := NewRay(camera_center, Ray_direction)
-			pixel_color := Ray_color(r, &world)
-			Write_color(pixel_color)
-
-		}
-
-	}
+	logger.Print(world)
+	cam.Render(&world)
 
 }
