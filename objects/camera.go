@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"os"
 	. "raytracer/common"
+	. "raytracer/material"
 )
 
 type Camera struct {
@@ -25,8 +26,8 @@ func (c *Camera) initialize() {
 	// c.Aspect_ratio = 1.0
 	// c.Image_width = 100
 
-	c.Sample_per_pixel = 300
-	c.max_depth = 50
+	c.Sample_per_pixel = 200
+	c.max_depth = 10
 
 	//Calculate image height
 	c.image_height = int(float64(c.Image_width) / c.Aspect_ratio)
@@ -97,9 +98,17 @@ func ray_color(r Ray, depth int, world Hittable) Color {
 
 	if world.Hit(r, NewInterval(0.001, Infinity), &rec) {
 
-		direction := rec.Normal.Add(Random_unit_vector())
+		// direction := rec.Normal.Add(Random_unit_vector())
 
-		return ray_color(NewRay(rec.P, direction), depth-1, world).Mult(0.50)
+		// return ray_color(NewRay(rec.P, direction), depth-1, world).Mult(0.50)
+
+		var scattered Ray
+		var attenuation Color
+
+		if rec.Mat.Scatter(&r, &rec, &attenuation, &scattered) {
+			return ComponentMultiply(attenuation, ray_color(scattered, depth-1, world))
+		}
+
 	}
 	unit_direction := Unit_vector(r.Direction)
 	a := 0.5 * (unit_direction.Y() + 1.0)

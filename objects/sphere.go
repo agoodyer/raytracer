@@ -3,11 +3,13 @@ package objects
 import (
 	"math"
 	. "raytracer/common"
+	. "raytracer/material"
 )
 
 type Sphere struct {
 	Center Point3
 	Radius float64
+	Mat    Material
 }
 
 func (s *Sphere) Hit(r Ray, ray_t Interval, rec *Hit_record) bool {
@@ -38,10 +40,9 @@ func (s *Sphere) Hit(r Ray, ray_t Interval, rec *Hit_record) bool {
 
 	outward_normal := rec.P.Sub(s.Center).Div(s.Radius)
 
-	// logger := log.New(os.Stderr, "", 0)
-	// logger.Print(outward_normal)
-
 	rec.Set_face_normal(r, outward_normal)
+
+	rec.Mat = s.Mat
 
 	return true
 

@@ -1,8 +1,13 @@
-package common
+package material
+
+import (
+	. "raytracer/common"
+)
 
 type Hit_record struct {
 	P          Point3
 	Normal     Vec3
+	Mat        Material
 	T          float64
 	Front_face bool
 }

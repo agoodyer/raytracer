@@ -45,6 +45,10 @@ func (v Vec3) Mult(t float64) Vec3 {
 	return NewVec3(v.e[0]*t, v.e[1]*t, v.e[2]*t)
 }
 
+func ComponentMultiply(v1 Vec3, v2 Vec3) Vec3 {
+	return NewVec3(v1.e[0]*v2.e[0], v1.e[1]*v2.e[1], v1.e[2]*v2.e[2])
+}
+
 func (v Vec3) Div(t float64) Vec3 {
 	return v.Mult(1 / t)
 }
@@ -111,4 +115,13 @@ func Random_on_hemisphere(normal Vec3) Vec3 {
 		return NullVector.Sub(on_unit_sphere)
 	}
 
+}
+
+func (v Vec3) Near_zero() bool {
+	s := 1e-8
+	return (math.Abs(v.e[0]) < s && math.Abs(v.e[1]) < s && math.Abs(v.e[2]) < s)
+}
+
+func Reflect(v Vec3, n Vec3) Vec3 {
+	return v.Sub(n.Mult(Dot(v, n) * 2))
 }
