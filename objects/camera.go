@@ -3,6 +3,7 @@ package objects
 import (
 	"fmt"
 	"log"
+	"math"
 	"math/rand"
 	"os"
 	. "raytracer/common"
@@ -19,6 +20,15 @@ type Camera struct {
 	pixel_delta_u    Vec3
 	pixel_delta_v    Vec3
 	max_depth        int
+	Vfov             float64
+	Look_from        Point3
+	Look_at          Point3
+	Vup              Point3
+	u, v, w          Vec3
+	Defocus_angle    float64
+	Focus_dist       float64
+	defocus_disk_u   Vec3
+	defocus_disk_v   Vec3
 }
 
 func (c *Camera) initialize() {
@@ -26,8 +36,16 @@ func (c *Camera) initialize() {
 	// c.Aspect_ratio = 1.0
 	// c.Image_width = 100
 
-	c.Sample_per_pixel = 200
-	c.max_depth = 10
+	c.Sample_per_pixel = 20
+	c.max_depth = 20
+
+	c.Vfov = 20
+	c.Look_from = NewPoint3(-2, 2, 1)
+	c.Look_at = NewPoint3(0, 0, -1)
+	c.Vup = NewVec3(0, 1, 0)
+
+	c.Defocus_angle = 10.0
+	c.Focus_dist = 3.4
 
 	//Calculate image height
 	c.image_height = int(float64(c.Image_width) / c.Aspect_ratio)
@@ -35,21 +53,33 @@ func (c *Camera) initialize() {
 		c.image_height = 1
 	}
 
-	//Camera
-	focal_length := 1.0
-	viewport_height := 2.0
-	viewport_width := viewport_height * float64(c.Image_width) / float64(c.image_height)
-	c.center = NewPoint3(0, 0, 0)
+	c.center = c.Look_from
 
-	viewport_u := NewVec3(viewport_width, 0, 0)
-	viewport_v := NewVec3(0, -viewport_height, 0)
+	//Camera
+	// focal_length := (c.Look_from.Sub(c.Look_at).Length())
+	theta := Degrees_to_radians(c.Vfov)
+	h := math.Tan(theta / 2)
+
+	viewport_height := 2.0 * h * c.Focus_dist
+	viewport_width := viewport_height * float64(c.Image_width) / float64(c.image_height)
+
+	c.w = Unit_vector(c.Look_from.Sub(c.Look_at))
+	c.u = Unit_vector(Cross(c.Vup, c.w))
+	c.v = Cross(c.w, c.u)
+
+	viewport_u := c.u.Mult(viewport_width)
+	viewport_v := c.v.Mult(-viewport_height)
 
 	c.pixel_delta_u = viewport_u.Div(float64(c.Image_width))
 	c.pixel_delta_v = viewport_v.Div(float64(c.image_height))
 
-	viewport_upper_left := c.center.Sub(NewVec3(0, 0, focal_length)).Sub(viewport_u.Div(2)).Sub(viewport_v.Div(2))
+	viewport_upper_left := c.center.Sub(c.w.Mult(c.Focus_dist)).Sub(viewport_u.Div(2)).Sub(viewport_v.Div(2))
 
 	c.pixel00_loc = viewport_upper_left.Add(c.pixel_delta_u.Add(c.pixel_delta_v).Mult(0.5))
+
+	defocus_radius := c.Focus_dist * math.Tan(Degrees_to_radians(c.Defocus_angle/2))
+	c.defocus_disk_u = c.u.Mult(defocus_radius)
+	c.defocus_disk_u = c.v.Mult(defocus_radius)
 
 }
 
@@ -121,9 +151,19 @@ func (c *Camera) get_ray(i int, j int) Ray {
 	pixel_sample := pixel_center.Add(c.pixel_sample_square())
 
 	ray_origin := c.center
+
+	if c.Defocus_angle > 0 {
+		ray_origin = c.defocus_disk_sample()
+	}
+
 	ray_direction := pixel_sample.Sub(ray_origin)
 
 	return NewRay(ray_origin, ray_direction)
+}
+
+func (c *Camera) defocus_disk_sample() Point3 {
+	p := Random_in_unit_disk()
+	return c.center.Add(c.defocus_disk_u.Mult(p.X())).Add(c.defocus_disk_v.Mult(p.Y()))
 }
 
 func (c *Camera) pixel_sample_square() Vec3 {

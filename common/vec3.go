@@ -80,9 +80,7 @@ func (v Vec3) Clone() Vec3 {
 }
 
 func Unit_vector(v Vec3) Vec3 {
-	v2 := v.Clone()
-	v2.Div(v.Length())
-	return v2
+	return v.Div(v.Length())
 }
 
 func RandomClampedVector() Vec3 {
@@ -96,6 +94,15 @@ func RandomVector(min float64, max float64) Vec3 {
 func Random_in_unit_sphere() Vec3 {
 	for {
 		p := RandomVector(-1, 1)
+		if p.Length_squared() < 1 {
+			return p
+		}
+	}
+}
+
+func Random_in_unit_disk() Vec3 {
+	for {
+		p := NewVec3(random_float(-1, 1), random_float(-1, 1), 0)
 		if p.Length_squared() < 1 {
 			return p
 		}
@@ -124,4 +131,11 @@ func (v Vec3) Near_zero() bool {
 
 func Reflect(v Vec3, n Vec3) Vec3 {
 	return v.Sub(n.Mult(Dot(v, n) * 2))
+}
+
+func Refract(uv Vec3, n Vec3, etai_over_etat float64) Vec3 {
+	cos_theta := math.Min(Dot(NullVector.Sub(uv), n), 1.0)
+	r_out_perp := uv.Add(n.Mult(cos_theta)).Mult(etai_over_etat)
+	r_out_parallel := n.Mult(math.Sqrt(math.Abs(1.0-r_out_perp.Length_squared())) * -1)
+	return r_out_parallel.Add(r_out_perp)
 }

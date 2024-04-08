@@ -14,7 +14,7 @@ const (
 
 // const pi float64 = 3.1415926535897932385
 
-func degrees_to_radians(degrees float64) float64 {
+func Degrees_to_radians(degrees float64) float64 {
 	return degrees * Pi / 180.0
 }
 
