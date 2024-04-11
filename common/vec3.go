@@ -88,7 +88,7 @@ func RandomClampedVector() Vec3 {
 }
 
 func RandomVector(min float64, max float64) Vec3 {
-	return NewVec3(random_float(min, max), random_float(min, max), random_float(min, max))
+	return NewVec3(Random_float(min, max), Random_float(min, max), Random_float(min, max))
 }
 
 func Random_in_unit_sphere() Vec3 {
@@ -102,7 +102,7 @@ func Random_in_unit_sphere() Vec3 {
 
 func Random_in_unit_disk() Vec3 {
 	for {
-		p := NewVec3(random_float(-1, 1), random_float(-1, 1), 0)
+		p := NewVec3(Random_float(-1, 1), Random_float(-1, 1), 0)
 		if p.Length_squared() < 1 {
 			return p
 		}

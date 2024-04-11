@@ -18,6 +18,6 @@ func Degrees_to_radians(degrees float64) float64 {
 	return degrees * Pi / 180.0
 }
 
-func random_float(min float64, max float64) float64 {
+func Random_float(min float64, max float64) float64 {
 	return min + (max-min)*rand.Float64()
 }
