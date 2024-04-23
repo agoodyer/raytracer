@@ -14,6 +14,7 @@ type Hit_record struct {
 
 type Hittable interface {
 	Hit(r Ray, ray_t Interval, rec *Hit_record) bool
+	Bounding_box() Aabb
 }
 
 func (h *Hit_record) Set_face_normal(r Ray, outward_normal Vec3) {
@@ -30,15 +31,17 @@ func (h *Hit_record) Set_face_normal(r Ray, outward_normal Vec3) {
 }
 
 type Hittable_list struct {
-	objects []Hittable
+	Objects []Hittable
+	bbox    Aabb
 }
 
 func (l *Hittable_list) Add(h Hittable) {
-	l.objects = append(l.objects, h)
+	l.Objects = append(l.Objects, h)
+	l.bbox = Merge(l.bbox, h.Bounding_box())
 }
 
 func (l *Hittable_list) clear() {
-	l.objects = l.objects[:0]
+	l.Objects = l.Objects[:0]
 }
 
 func (l *Hittable_list) Hit(r Ray, ray_t Interval, rec *Hit_record) bool {
@@ -47,7 +50,7 @@ func (l *Hittable_list) Hit(r Ray, ray_t Interval, rec *Hit_record) bool {
 	hit_anything := false
 	closest_so_far := ray_t.Max
 
-	for _, object := range l.objects {
+	for _, object := range l.Objects {
 
 		if object.Hit(r, NewInterval(ray_t.Min, closest_so_far), &temp_rec) {
 			hit_anything = true
@@ -59,4 +62,8 @@ func (l *Hittable_list) Hit(r Ray, ray_t Interval, rec *Hit_record) bool {
 
 	return hit_anything
 
+}
+
+func (l *Hittable_list) Bounding_box() Aabb {
+	return l.bbox
 }

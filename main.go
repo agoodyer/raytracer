@@ -1,7 +1,6 @@
 package main
 
 import (
-	"math/rand"
 	. "raytracer/common"
 	. "raytracer/material"
 	. "raytracer/objects"
@@ -22,51 +21,63 @@ func main() {
 	// world.Add(&Sphere{Center: NewPoint3(-1, 0, -1), Radius: -0.3, Mat: &material_left})
 	// world.Add(&Sphere{Center: NewPoint3(1, -0, -1), Radius: 0.5, Mat: &material_right})
 
-	ground_material := NewLambertian(NewColor(0.5, 0.5, 0.5))
-	world.Add(&Sphere{Center: NewPoint3(0, -1000, -0), Radius: 1000, Mat: &ground_material})
+	// ground_material := NewLambertian(NewColor(0.5, 0.5, 0.5))
+	// world.Add(&Sphere{Center: NewPoint3(0, -1000, -0), Radius: 1000, Mat: &ground_material})
 
-	for a := -11; a < 11; a++ {
-		for b := -11; b < 11; b++ {
+	// for a := -11; a < 11; a++ {
+	// 	for b := -11; b < 11; b++ {
 
-			choose_mat := rand.Float64()
-			center := NewPoint3(float64(a)+0.9*rand.Float64(), 0.2, float64(b)+0.9*rand.Float64())
+	// 		choose_mat := rand.Float64()
+	// 		center := NewPoint3(float64(a)+0.9*rand.Float64(), 0.2, float64(b)+0.9*rand.Float64())
 
-			if center.Sub(NewPoint3(4, 0.2, 0)).Length() > 0.9 {
-				// var sphere_material Material
+	// 		if center.Sub(NewPoint3(4, 0.2, 0)).Length() > 0.9 {
+	// 			// var sphere_material Material
 
-				if choose_mat < 0.8 {
-					//diffuse
-					var albedo Color = ComponentMultiply(RandomClampedVector(), RandomClampedVector())
-					sphere_material := NewLambertian(albedo)
-					world.Add(&Sphere{Center: center, Radius: 0.2, Mat: &sphere_material})
-				} else if choose_mat < 0.95 {
-					var albedo Color = NewColor(0.5, 0.5, 0.5).Add(RandomClampedVector().Mult(0.499))
-					fuzz := Random_float(0.5, 1)
-					sphere_material := NewMetal(albedo, fuzz)
-					world.Add(&Sphere{Center: center, Radius: 0.2, Mat: &sphere_material})
+	// 			if choose_mat < 0.8 {
+	// 				//diffuse
+	// 				var albedo Color = ComponentMultiply(RandomClampedVector(), RandomClampedVector())
+	// 				sphere_material := NewLambertian(albedo)
+	// 				world.Add(&Sphere{Center: center, Radius: 0.2, Mat: &sphere_material})
+	// 			} else if choose_mat < 0.95 {
+	// 				var albedo Color = NewColor(0.5, 0.5, 0.5).Add(RandomClampedVector().Mult(0.499))
+	// 				fuzz := Random_float(0.5, 1)
+	// 				sphere_material := NewMetal(albedo, fuzz)
+	// 				world.Add(&Sphere{Center: center, Radius: 0.2, Mat: &sphere_material})
 
-				} else {
-					sphere_material := NewDielectric(1.5)
-					world.Add(&Sphere{Center: center, Radius: 0.2, Mat: &sphere_material})
-				}
-			}
+	// 			} else {
+	// 				sphere_material := NewDielectric(1.5)
+	// 				world.Add(&Sphere{Center: center, Radius: 0.2, Mat: &sphere_material})
+	// 			}
+	// 		}
 
-		}
-	}
+	// 	}
+	// }
 
-	material1 := NewDielectric(1.5)
+	// material1 := NewDielectric(1.5)
 
 	material2 := NewLambertian(NewColor(0.4, 0.2, 0.1))
-	material3 := NewMetal(NewColor(0.7, 0.6, 0.5), 0.0)
+	// material3 := NewMetal(NewColor(0.7, 0.6, 0.5), 0.0)
 
-	world.Add(&Sphere{Center: NewPoint3(0, 1, 0), Radius: 1.0, Mat: &material1})
-	world.Add(&Sphere{Center: NewPoint3(-4, 1, 0), Radius: 1.0, Mat: &material2})
-	world.Add(&Sphere{Center: NewPoint3(4, 1, 0), Radius: 1.0, Mat: &material3})
+	// world.Add(&Sphere{Center: NewPoint3(0, 1, 0), Radius: 1.0, Mat: &material1})
+	// world.Add(&Sphere{Center: NewPoint3(-4, 1, 0), Radius: 1.0, Mat: &material2})
+	// world.Add(&Sphere{Center: NewPoint3(4, 1, 0), Radius: 1.0, Mat: &material3})
 
 	var cam Camera
 
 	cam.Aspect_ratio = 16.0 / 9.0
-	cam.Image_width = 1200
+	cam.Image_width = 400
+
+	q := NewSphere(NewPoint3(0, 1, 0), 1.0, &material2)
+	world.Add(&q)
+
+	w := NewSphere(NewPoint3(-4, 1, 0), 1.0, &material2)
+	world.Add(&w)
+
+	z := NewSphere(NewPoint3(-4, 1, 40), 1.0, &material2)
+	world.Add(&z)
+
+	// gg := NewBvh2(world.Objects, 0, len(world.Objects))
+
 	cam.Render(&world)
 
 }

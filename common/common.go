@@ -21,3 +21,7 @@ func Degrees_to_radians(degrees float64) float64 {
 func Random_float(min float64, max float64) float64 {
 	return min + (max-min)*rand.Float64()
 }
+
+func Random_int(min int, max int) int {
+	return int(Random_float(float64(min), float64(max+1)))
+}

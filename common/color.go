@@ -2,6 +2,8 @@ package common
 
 import (
 	"fmt"
+	"image"
+	"image/color"
 	"math"
 )
 
@@ -11,7 +13,7 @@ func NewColor(x float64, y float64, z float64) Vec3 {
 	return NewVec3(x, y, z)
 }
 
-func Write_color(pixel_color Color, samples_per_pixel int) {
+func Write_color(pixel_color Color, samples_per_pixel int, img *image.RGBA, i int, j int) {
 
 	r := pixel_color.X()
 	g := pixel_color.Y()
@@ -34,6 +36,11 @@ func Write_color(pixel_color Color, samples_per_pixel int) {
 		int(256*intensity.Clamp(g)),
 		int(256*intensity.Clamp(b)),
 	)
+
+	img.Set(i, j, color.RGBA{
+		uint8(256 * intensity.Clamp(r)),
+		uint8(256 * intensity.Clamp(g)),
+		uint8(256 * intensity.Clamp(b)), 255})
 
 }
 

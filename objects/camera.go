@@ -2,6 +2,8 @@ package objects
 
 import (
 	"fmt"
+	"image"
+	"image/png"
 	"log"
 	"math"
 	"math/rand"
@@ -87,7 +89,11 @@ func (c *Camera) Render(world Hittable) {
 
 	c.initialize()
 
+	img := image.NewRGBA(image.Rect(0, 0, c.Image_width, c.image_height))
+
 	logger := log.New(os.Stderr, "", 0)
+
+	logger.Print(world.Bounding_box())
 
 	fmt.Printf("P3\n%d %d\n255\n", c.Image_width, c.image_height)
 
@@ -111,10 +117,22 @@ func (c *Camera) Render(world Hittable) {
 			// // logger.Print(c.pixel_delta_u)
 			// pixel_color := ray_color(r, world)
 
-			Write_color(pixel_color, c.Sample_per_pixel)
+			Write_color(pixel_color, c.Sample_per_pixel, img, i, j)
 
 		}
 
+	}
+
+	// Create a file to save the image
+	file, err := os.Create("output.png")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	// Encode the image to PNG and save to the file
+	if err := png.Encode(file, img); err != nil {
+		panic(err)
 	}
 
 }

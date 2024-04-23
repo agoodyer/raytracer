@@ -10,6 +10,16 @@ type Sphere struct {
 	Center Point3
 	Radius float64
 	Mat    Material
+	Bbox   Aabb
+}
+
+func NewSphere(center Point3, radius float64, material Material) Sphere {
+	rvec := NewVec3(radius, radius, radius)
+
+	// logger := log.New(os.Stderr, "", 0)
+	// logger.Print("!!!!")
+
+	return Sphere{Center: center, Radius: radius, Mat: material, Bbox: NewAabbFromPoints(center.Sub(rvec), center.Add(rvec))}
 }
 
 func (s *Sphere) Hit(r Ray, ray_t Interval, rec *Hit_record) bool {
@@ -46,4 +56,8 @@ func (s *Sphere) Hit(r Ray, ray_t Interval, rec *Hit_record) bool {
 
 	return true
 
+}
+
+func (s *Sphere) Bounding_box() Aabb {
+	return s.Bbox
 }

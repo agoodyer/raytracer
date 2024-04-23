@@ -23,6 +23,10 @@ func (v Vec3) Z() float64 {
 	return v.e[2]
 }
 
+func (v *Vec3) XYZ() [3]float64 {
+	return v.e
+}
+
 func NewVec3(x float64, y float64, z float64) Vec3 {
 	return Vec3{e: [3]float64{x, y, z}}
 }

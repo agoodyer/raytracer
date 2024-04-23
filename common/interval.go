@@ -1,5 +1,7 @@
 package common
 
+import "math"
+
 type Interval struct {
 	Min float64
 	Max float64
@@ -10,6 +12,14 @@ var universe Interval = Interval{Min: -Infinity, Max: Infinity}
 
 func NewInterval(min float64, max float64) Interval {
 	return Interval{Min: min, Max: max}
+}
+
+func MergeInterval(a Interval, b Interval) Interval {
+	min := math.Min(a.Min, b.Min)
+	max := math.Max(a.Max, b.Max)
+
+	return Interval{Min: min, Max: max}
+
 }
 
 func (i *Interval) Contains(x float64) bool {
@@ -28,4 +38,9 @@ func (i *Interval) Clamp(x float64) float64 {
 		return i.Max
 	}
 	return x
+}
+
+func (i *Interval) Expand(delta float64) Interval {
+	padding := delta / 2
+	return NewInterval(i.Min-padding, i.Max+padding)
 }
