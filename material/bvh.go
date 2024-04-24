@@ -1,10 +1,7 @@
 package material
 
 import (
-	"log"
-	"os"
 	. "raytracer/common"
-	"reflect"
 	"sort"
 )
 
@@ -26,7 +23,7 @@ func NewBvh2(objects []Hittable, start int, end int) Bvh {
 
 	var comparator func(a Hittable, b Hittable) bool
 
-	logger := log.New(os.Stderr, "", 0)
+	// logger := log.New(os.Stderr, "", 0)
 	// logger.Print(objects)
 
 	if axis == 0 {
@@ -62,7 +59,7 @@ func NewBvh2(objects []Hittable, start int, end int) Bvh {
 
 	}
 
-	logger.Print("left: ", reflect.TypeOf(bvh.left), "\nright: ", reflect.TypeOf(bvh.right), "\n ~~~~~~~~~~~~~~~~~~")
+	// logger.Print("left: ", reflect.TypeOf(bvh.left), bvh.left, "\nright: ", reflect.TypeOf(bvh.right), bvh.right, "\n ~~~~~~~~~~~~~~~~~~")
 
 	bvh.bbox = Merge(bvh.left.Bounding_box(), bvh.right.Bounding_box())
 	return bvh
@@ -74,13 +71,13 @@ func (bvh *Bvh) Bounding_box() Aabb {
 }
 
 func (bvh *Bvh) Hit(r Ray, ray_t Interval, rec *Hit_record) bool {
-	logger := log.New(os.Stderr, "", 0)
+	// logger := log.New(os.Stderr, "", 0)
 
-	if bvh.bbox.Hit(r, &ray_t) {
-		logger.Print("!")
-	}
+	// if bvh.bbox.Hit(r, &ray_t) {
+	// 	logger.Print("!")
+	// }
 
-	if !bvh.bbox.Hit(r, &ray_t) {
+	if !bvh.bbox.Hit(&r, &ray_t) {
 		return false
 	}
 
@@ -93,7 +90,7 @@ func (bvh *Bvh) Hit(r Ray, ray_t Interval, rec *Hit_record) bool {
 
 	hit_right := bvh.right.Hit(r, NewInterval(ray_t.Min, max), rec)
 
-	logger.Print(hit_left || hit_right)
+	// logger.Print(hit_left || hit_right)
 
 	return hit_left || hit_right
 

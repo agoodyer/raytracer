@@ -62,9 +62,10 @@ func (a *Aabb) Axis_interval(n int) Interval {
 	return a.x
 }
 
-func (a *Aabb) Hit(r Ray, ray_t *Interval) bool {
+func (a *Aabb) Hit(r *Ray, ray_t *Interval) bool {
 
 	// logger := log.New(os.Stderr, "", 0)
+	// logger.Print(r.Direction)
 
 	ray_orig := r.Origin
 	ray_dir := r.Direction
@@ -90,7 +91,7 @@ func (a *Aabb) Hit(r Ray, ray_t *Interval) bool {
 				ray_t.Min = t1
 			}
 			if t0 < ray_t.Max {
-				ray_t.Max = t1
+				ray_t.Max = t0
 			}
 
 		}

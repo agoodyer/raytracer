@@ -1,7 +1,6 @@
 package common
 
 import (
-	"fmt"
 	"image"
 	"image/color"
 	"math"
@@ -31,11 +30,11 @@ func Write_color(pixel_color Color, samples_per_pixel int, img *image.RGBA, i in
 
 	intensity := NewInterval(0.000, 0.999)
 
-	fmt.Printf("%d %d %d \n",
-		int(256*intensity.Clamp(r)),
-		int(256*intensity.Clamp(g)),
-		int(256*intensity.Clamp(b)),
-	)
+	// fmt.Printf("%d %d %d \n",
+	// 	int(256*intensity.Clamp(r)),
+	// 	int(256*intensity.Clamp(g)),
+	// 	int(256*intensity.Clamp(b)),
+	// )
 
 	img.Set(i, j, color.RGBA{
 		uint8(256 * intensity.Clamp(r)),

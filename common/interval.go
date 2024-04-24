@@ -7,8 +7,8 @@ type Interval struct {
 	Max float64
 }
 
-var empty Interval = Interval{Min: Infinity, Max: -Infinity}
-var universe Interval = Interval{Min: -Infinity, Max: Infinity}
+var Empty Interval = Interval{Min: Infinity, Max: -Infinity}
+var Universe Interval = Interval{Min: -Infinity, Max: Infinity}
 
 func NewInterval(min float64, max float64) Interval {
 	return Interval{Min: min, Max: max}

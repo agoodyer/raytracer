@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"image"
 	"image/png"
-	"log"
 	"math"
 	"math/rand"
 	"os"
 	. "raytracer/common"
 	. "raytracer/material"
+	"sync"
+	"time"
 )
 
 type Camera struct {
@@ -38,8 +39,8 @@ func (c *Camera) initialize() {
 	// c.Aspect_ratio = 1.0
 	// c.Image_width = 100
 
-	c.Sample_per_pixel = 250
-	c.max_depth = 50
+	c.Sample_per_pixel = 10 //250
+	c.max_depth = 4         //50
 
 	c.Vfov = 20
 	c.Look_from = NewPoint3(13, 2, 3)
@@ -87,19 +88,68 @@ func (c *Camera) initialize() {
 
 func (c *Camera) Render(world Hittable) {
 
+	start := time.Now() //time execution
+
 	c.initialize()
 
 	img := image.NewRGBA(image.Rect(0, 0, c.Image_width, c.image_height))
 
-	logger := log.New(os.Stderr, "", 0)
-
-	logger.Print(world.Bounding_box())
-
-	fmt.Printf("P3\n%d %d\n255\n", c.Image_width, c.image_height)
-
 	for j := 0; j < c.image_height; j++ {
 
-		logger.Printf("Scanlines remaining: %d", c.image_height-j)
+		fmt.Printf("Scanlines remaining: %d\n", c.image_height-j)
+
+		for i := 0; i < c.Image_width; i++ {
+
+			pixel_color := NewColor(0, 0, 0)
+
+			for sample := 0; sample < c.Sample_per_pixel; sample++ {
+				r := c.get_ray(i, j)
+				pixel_color = pixel_color.Add(ray_color(r, c.max_depth, world))
+			}
+
+			Write_color(pixel_color, c.Sample_per_pixel, img, i, j)
+
+		}
+
+	}
+
+	//THREAD TESTING
+	// var wg sync.WaitGroup
+
+	// numWorkers := 2
+
+	// wg.Add(numWorkers)
+
+	// go c.renderBlock(0, c.image_height/4, world, img, &wg)
+
+	// go c.renderBlock(c.image_height/4, c.image_height/4, world, img, &wg)
+
+	// wg.Wait()
+
+	//END TEST
+
+	// Create a file to save the image
+	file, err := os.Create("output.png")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	// Encode the image to PNG and save to the file
+	if err := png.Encode(file, img); err != nil {
+		panic(err)
+	}
+
+	elapsed := time.Since(start)
+	fmt.Print("~~~~~~~~~~~~~~~~~~~~~~~~~~\nElapsed Time: ", elapsed, "\n~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
+
+}
+
+func (c *Camera) renderBlock(startLine int, numLines int, world Hittable, img *image.RGBA, wg *sync.WaitGroup) {
+
+	defer wg.Done()
+
+	for j := startLine; j < startLine+numLines; j++ {
 
 		for i := 0; i < c.Image_width; i++ {
 
@@ -121,18 +171,6 @@ func (c *Camera) Render(world Hittable) {
 
 		}
 
-	}
-
-	// Create a file to save the image
-	file, err := os.Create("output.png")
-	if err != nil {
-		panic(err)
-	}
-	defer file.Close()
-
-	// Encode the image to PNG and save to the file
-	if err := png.Encode(file, img); err != nil {
-		panic(err)
 	}
 
 }
