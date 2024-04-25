@@ -44,3 +44,7 @@ func (i *Interval) Expand(delta float64) Interval {
 	padding := delta / 2
 	return NewInterval(i.Min-padding, i.Max+padding)
 }
+
+func (i *Interval) Size() float64 {
+	return i.Max - i.Min
+}

@@ -13,11 +13,11 @@ type Hit_record struct {
 }
 
 type Hittable interface {
-	Hit(r Ray, ray_t Interval, rec *Hit_record) bool
+	Hit(r *Ray, ray_t Interval, rec *Hit_record) bool
 	Bounding_box() Aabb
 }
 
-func (h *Hit_record) Set_face_normal(r Ray, outward_normal Vec3) {
+func (h *Hit_record) Set_face_normal(r *Ray, outward_normal Vec3) {
 	h.Front_face = Dot(r.Direction, outward_normal) < 0
 	if h.Front_face {
 		h.Normal = outward_normal
@@ -44,7 +44,7 @@ func (l *Hittable_list) clear() {
 	l.Objects = l.Objects[:0]
 }
 
-func (l *Hittable_list) Hit(r Ray, ray_t Interval, rec *Hit_record) bool {
+func (l *Hittable_list) Hit(r *Ray, ray_t Interval, rec *Hit_record) bool {
 
 	var temp_rec Hit_record
 	hit_anything := false

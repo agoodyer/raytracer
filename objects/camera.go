@@ -104,7 +104,7 @@ func (c *Camera) Render(world Hittable) {
 
 			for sample := 0; sample < c.Sample_per_pixel; sample++ {
 				r := c.get_ray(i, j)
-				pixel_color = pixel_color.Add(ray_color(r, c.max_depth, world))
+				pixel_color = pixel_color.Add(ray_color(&r, c.max_depth, world))
 			}
 
 			Write_color(pixel_color, c.Sample_per_pixel, img, i, j)
@@ -157,7 +157,7 @@ func (c *Camera) renderBlock(startLine int, numLines int, world Hittable, img *i
 
 			for sample := 0; sample < c.Sample_per_pixel; sample++ {
 				r := c.get_ray(i, j)
-				pixel_color = pixel_color.Add(ray_color(r, c.max_depth, world))
+				pixel_color = pixel_color.Add(ray_color(&r, c.max_depth, world))
 				// logger.Print(pixel_color)
 			}
 
@@ -175,7 +175,7 @@ func (c *Camera) renderBlock(startLine int, numLines int, world Hittable, img *i
 
 }
 
-func ray_color(r Ray, depth int, world Hittable) Color {
+func ray_color(r *Ray, depth int, world Hittable) Color {
 	var rec Hit_record
 
 	if depth <= 0 {
@@ -191,8 +191,8 @@ func ray_color(r Ray, depth int, world Hittable) Color {
 		var scattered Ray
 		var attenuation Color
 
-		if rec.Mat.Scatter(&r, &rec, &attenuation, &scattered) {
-			return ComponentMultiply(attenuation, ray_color(scattered, depth-1, world))
+		if rec.Mat.Scatter(r, &rec, &attenuation, &scattered) {
+			return ComponentMultiply(attenuation, ray_color(&scattered, depth-1, world))
 		}
 
 	}

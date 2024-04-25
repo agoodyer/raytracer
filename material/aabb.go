@@ -43,10 +43,6 @@ func NewAabbFromPoints(a Point3, b Point3) Aabb {
 		z = NewInterval(b.Z(), a.Z())
 	}
 
-	// logger := log.New(os.Stderr, "", 0)
-
-	// logger.Print(x, y, z)
-
 	return Aabb{x: x, y: y, z: z}
 
 }
@@ -63,9 +59,6 @@ func (a *Aabb) Axis_interval(n int) Interval {
 }
 
 func (a *Aabb) Hit(r *Ray, ray_t *Interval) bool {
-
-	// logger := log.New(os.Stderr, "", 0)
-	// logger.Print(r.Direction)
 
 	ray_orig := r.Origin
 	ray_dir := r.Direction
@@ -104,4 +97,23 @@ func (a *Aabb) Hit(r *Ray, ray_t *Interval) bool {
 
 	return true
 
+}
+
+func (a *Aabb) Longest_axis() int {
+	if a.x.Size() > a.y.Size() {
+
+		if a.x.Size() > a.z.Size() {
+			return 0
+		} else {
+			return 2
+		}
+
+	} else {
+		if a.y.Size() > a.z.Size() {
+			return 1
+		} else {
+			return 2
+		}
+
+	}
 }

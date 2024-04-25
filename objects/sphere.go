@@ -22,7 +22,7 @@ func NewSphere(center Point3, radius float64, material Material) Sphere {
 	return Sphere{Center: center, Radius: radius, Mat: material, Bbox: NewAabbFromPoints(center.Sub(rvec), center.Add(rvec))}
 }
 
-func (s *Sphere) Hit(r Ray, ray_t Interval, rec *Hit_record) bool {
+func (s *Sphere) Hit(r *Ray, ray_t Interval, rec *Hit_record) bool {
 	oc := r.Origin.Sub(s.Center)
 	a := r.Direction.Length_squared()
 	half_b := Dot(oc, r.Direction)
