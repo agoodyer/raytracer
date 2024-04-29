@@ -1,3 +1,5 @@
 *.ppm
 *.exe
 *.png 
+!assets/*.png
+

@@ -61,8 +61,14 @@ func RandomSpheres() Hittable_list {
 	world.Add(&s2)
 	world.Add(&s3)
 
-	ground_material := NewLambertian(NewColor(0.5, 0.5, 0.5))
-	ground := NewSphere(NewPoint3(0, -1000, 0), 1000, &ground_material)
+	// ground_material := NewLambertian(NewColor(0.5, 0.5, 0.5))
+
+	c1 := NewColor(0.2, 0.3, 0.1)
+	c2 := NewColor(0.9, 0.9, 0.9)
+	checker := NewChecker_texture(0.32, &c1, &c2)
+
+	checkerLambertian := NewTexturedLambertian(&checker)
+	ground := NewSphere(NewPoint3(0, -1000, 0), 1000, &checkerLambertian)
 	world.Add(&ground)
 
 	return world

@@ -51,10 +51,25 @@ func (s *Sphere) Hit(r *Ray, ray_t Interval, rec *Hit_record) bool {
 	outward_normal := rec.P.Sub(s.Center).Div(s.Radius)
 
 	rec.Set_face_normal(r, outward_normal)
+	s.Get_sphere_uv(&outward_normal, &rec.U, &rec.V)
+
+	// fmt.Print(rec.U, rec.V, "\n")
 
 	rec.Mat = s.Mat
 
 	return true
+
+}
+
+func (s *Sphere) Get_sphere_uv(p *Point3, u *float64, v *float64) {
+
+	theta := math.Acos(-p.Y())
+	phi := math.Atan2(-p.Z(), p.X()) + math.Pi
+
+	*u = (phi / (2 * math.Pi))
+	*v = theta / math.Pi
+
+	// fmt.Print(*u, *v, "\n")
 
 }
 

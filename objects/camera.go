@@ -39,16 +39,16 @@ func (c *Camera) initialize() {
 	// c.Aspect_ratio = 1.0
 	// c.Image_width = 100
 
-	c.Sample_per_pixel = 10 //250
-	c.max_depth = 4         //50
+	c.Sample_per_pixel = 50 //250
+	c.max_depth = 20        //50
 
 	c.Vfov = 20
-	c.Look_from = NewPoint3(13, 2, 3)
+	c.Look_from = NewPoint3(60, 2, 3)
 	c.Look_at = NewPoint3(0, 0, 0)
 	c.Vup = NewVec3(0, 1, 0)
 
-	c.Defocus_angle = 0.6
-	c.Focus_dist = 10.0
+	c.Defocus_angle = 0.0
+	c.Focus_dist = 50.0
 
 	//Calculate image height
 	c.image_height = int(float64(c.Image_width) / c.Aspect_ratio)
