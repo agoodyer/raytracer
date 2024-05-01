@@ -2,6 +2,7 @@ package main
 
 import (
 	. "raytracer/material"
+
 	. "raytracer/objects"
 	"raytracer/scenes"
 )
@@ -11,12 +12,15 @@ func main() {
 	var world Hittable_list
 	var cam Camera
 
-	cam.Aspect_ratio = 16.0 / 9.0
-	cam.Image_width = 500
+	// // world, cam = scenes.RandomSpheres()
+	// // world, cam = scenes.Texturedspheres()
+	// // world = scenes.Earth()
 
-	// world = scenes.RandomSpheres()
-	world = scenes.Texturedspheres()
-	// world = scenes.Earth()
+	// world, cam = scenes.Quads()
+
+	// // world, cam = scenes.Boxes()
+
+	world, cam = scenes.Meshes()
 
 	bvh := NewBvh(world.Objects)
 

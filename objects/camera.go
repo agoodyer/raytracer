@@ -22,7 +22,7 @@ type Camera struct {
 	pixel00_loc      Point3
 	pixel_delta_u    Vec3
 	pixel_delta_v    Vec3
-	max_depth        int
+	Max_depth        int
 	Vfov             float64
 	Look_from        Point3
 	Look_at          Point3
@@ -32,23 +32,36 @@ type Camera struct {
 	Focus_dist       float64
 	defocus_disk_u   Vec3
 	defocus_disk_v   Vec3
+	Background       Color
+	Log_scanlines    bool
 }
 
-func (c *Camera) initialize() {
+func NewCamera() Camera {
 
-	// c.Aspect_ratio = 1.0
-	// c.Image_width = 100
+	var c Camera = Camera{}
 
-	c.Sample_per_pixel = 50 //250
-	c.max_depth = 20        //50
+	c.Aspect_ratio = 16.0 / 9.0
+	c.Image_width = 100
 
-	c.Vfov = 20
-	c.Look_from = NewPoint3(60, 2, 3)
-	c.Look_at = NewPoint3(0, 0, 0)
+	c.Sample_per_pixel = 300 //250
+	c.Max_depth = 30         //50
+
+	c.Vfov = 60
+	c.Look_from = NewPoint3(13, 11, -4)
+	c.Look_at = NewPoint3(0, -2, 0)
 	c.Vup = NewVec3(0, 1, 0)
 
 	c.Defocus_angle = 0.0
-	c.Focus_dist = 50.0
+	c.Focus_dist = 10.0
+
+	c.Background = NewColor(0.0, 0.0, 0.025)
+
+	c.Log_scanlines = false
+
+	return c
+}
+
+func (c *Camera) initialize() {
 
 	//Calculate image height
 	c.image_height = int(float64(c.Image_width) / c.Aspect_ratio)
@@ -96,7 +109,9 @@ func (c *Camera) Render(world Hittable) {
 
 	for j := 0; j < c.image_height; j++ {
 
-		fmt.Printf("Scanlines remaining: %d\n", c.image_height-j)
+		if c.Log_scanlines {
+			fmt.Printf("Scanlines remaining: %d\n", c.image_height-j)
+		}
 
 		for i := 0; i < c.Image_width; i++ {
 
@@ -104,7 +119,7 @@ func (c *Camera) Render(world Hittable) {
 
 			for sample := 0; sample < c.Sample_per_pixel; sample++ {
 				r := c.get_ray(i, j)
-				pixel_color = pixel_color.Add(ray_color(&r, c.max_depth, world))
+				pixel_color = pixel_color.Add(ray_color(c, &r, c.Max_depth, world))
 			}
 
 			Write_color(pixel_color, c.Sample_per_pixel, img, i, j)
@@ -157,7 +172,7 @@ func (c *Camera) renderBlock(startLine int, numLines int, world Hittable, img *i
 
 			for sample := 0; sample < c.Sample_per_pixel; sample++ {
 				r := c.get_ray(i, j)
-				pixel_color = pixel_color.Add(ray_color(&r, c.max_depth, world))
+				pixel_color = pixel_color.Add(ray_color(c, &r, c.Max_depth, world))
 				// logger.Print(pixel_color)
 			}
 
@@ -175,30 +190,39 @@ func (c *Camera) renderBlock(startLine int, numLines int, world Hittable, img *i
 
 }
 
-func ray_color(r *Ray, depth int, world Hittable) Color {
+func ray_color(c *Camera, r *Ray, depth int, world Hittable) Color {
 	var rec Hit_record
 
 	if depth <= 0 {
 		return NewColor(0, 0, 0)
 	}
 
-	if world.Hit(r, NewInterval(0.001, Infinity), &rec) {
-
-		// direction := rec.Normal.Add(Random_unit_vector())
-
-		// return ray_color(NewRay(rec.P, direction), depth-1, world).Mult(0.50)
-
-		var scattered Ray
-		var attenuation Color
-
-		if rec.Mat.Scatter(r, &rec, &attenuation, &scattered) {
-			return ComponentMultiply(attenuation, ray_color(&scattered, depth-1, world))
-		}
-
+	if !world.Hit(r, NewInterval(0.001, Infinity), &rec) {
+		return c.Background
 	}
-	unit_direction := Unit_vector(r.Direction)
-	a := 0.5 * (unit_direction.Y() + 1.0)
-	return NewColor(1.0, 1.0, 1.0).Mult(1.0 - a).Add(NewColor(0.5, 0.7, 1.0).Mult(a))
+
+	// direction := rec.Normal.Add(Random_unit_vector())
+
+	// return ray_color(NewRay(rec.P, direction), depth-1, world).Mult(0.50)
+
+	var scattered Ray
+	var attenuation Color
+
+	color_from_emission := rec.Mat.Emitted(rec.U, rec.V, &rec.P)
+
+	if !rec.Mat.Scatter(r, &rec, &attenuation, &scattered) {
+		return color_from_emission
+	}
+
+	// if rec.Mat.Scatter(r, &rec, &attenuation, &scattered) {
+	color_from_scatter := ComponentMultiply(attenuation, ray_color(c, &scattered, depth-1, world))
+	// }
+
+	return color_from_emission.Add(color_from_scatter)
+
+	// unit_direction := Unit_vector(r.Direction)
+	// a := 0.5 * (unit_direction.Y() + 1.0)
+	// return NewColor(1.0, 1.0, 1.0).Mult(1.0 - a).Add(NewColor(0.5, 0.7, 1.0).Mult(a))
 }
 
 func (c *Camera) get_ray(i int, j int) Ray {

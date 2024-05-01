@@ -20,3 +20,7 @@ func (m *Metal) Scatter(r *Ray, rec *Hit_record, attenuation *Color, scattered *
 	return true
 
 }
+
+func (m *Metal) Emitted(u float64, v float64, p *Point3) Color {
+	return NewColor(0, 0, 0)
+}

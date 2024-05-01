@@ -9,14 +9,24 @@ type Aabb struct {
 }
 
 func NewAabb(x Interval, y Interval, z Interval) Aabb {
-	return Aabb{x: x, y: y, z: z}
+
+	bb := Aabb{x: x, y: y, z: z}
+
+	bb.introduce_padding()
+
+	return bb
 }
 
 func Merge(box0 Aabb, box1 Aabb) Aabb {
 	x := MergeInterval(box0.x, box1.x)
 	y := MergeInterval(box0.y, box1.y)
 	z := MergeInterval(box0.z, box1.z)
-	return Aabb{x: x, y: y, z: z}
+
+	bb := Aabb{x: x, y: y, z: z}
+
+	bb.introduce_padding()
+
+	return bb
 }
 
 func NewAabbFromPoints(a Point3, b Point3) Aabb {
@@ -115,5 +125,18 @@ func (a *Aabb) Longest_axis() int {
 			return 2
 		}
 
+	}
+}
+
+func (a *Aabb) introduce_padding() {
+	delta := 0.0001
+	if a.x.Size() < 0.0001 {
+		a.x = a.x.Expand(delta)
+	}
+	if a.y.Size() < 0.0001 {
+		a.y = a.y.Expand(delta)
+	}
+	if a.z.Size() < 0.0001 {
+		a.z = a.z.Expand(delta)
 	}
 }

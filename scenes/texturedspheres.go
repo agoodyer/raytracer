@@ -6,9 +6,28 @@ import (
 	. "raytracer/objects"
 )
 
-func Texturedspheres() Hittable_list {
+func Texturedspheres() (Hittable_list, Camera) {
 
 	var world Hittable_list
+
+	c := NewCamera()
+	c.Aspect_ratio = 16.0 / 9.0
+	c.Image_width = 1920
+
+	c.Sample_per_pixel = 500 //250
+	c.Max_depth = 50         //50
+
+	c.Vfov = 68
+	c.Look_from = NewPoint3(14, 12, -5)
+	c.Look_at = NewPoint3(0, -2, 0)
+	c.Vup = NewVec3(0, 1, 0)
+
+	c.Defocus_angle = 0.0
+	c.Focus_dist = 10.0
+
+	c.Background = NewColor(0.0, 0.0, 0.0085)
+
+	c.Log_scanlines = true
 
 	// c1 := NewColor(0.2, 0.3, 0.1)
 	// c2 := NewColor(0.9, 0.9, 0.9)
@@ -24,12 +43,26 @@ func Texturedspheres() Hittable_list {
 	moon_tex := NewImage_texture("assets/moon.jpg")
 	moon_surface := NewTexturedLambertian(&moon_tex)
 
-	s1 := NewSphere(NewPoint3(0, -10, 0), 10.0, &earth_surface)
-	s2 := NewSphere(NewPoint3(0, 6, 0), 4.0, &moon_surface)
+	// sky_tex := NewImage_texture("assets/expsky2.png")
+	// sky_surface := NewTexturedDiffuse_Light(&sky_tex, 0.4)
+
+	sun_surface := NewDiffuse_light(NewColor(8, 8, 8))
+
+	s1 := NewSphere(NewPoint3(0, -10, 0), 8.0, &earth_surface)
+	s2 := NewSphere(NewPoint3(0, 6, -5), 2.0, &moon_surface)
+
+	s3 := NewSphere(NewPoint3(14000, 16000, 34000), 2000, &sun_surface)
+
+	// q1 := NewQuad(NewPoint3(-3, -2, 5), NewVec3(0, 0, -4), NewVec3(0, 4, 0), &earth_surface)
+
+	// sky := NewSphere(NewPoint3(10000, 10000, -100000), 3000000, &sky_surface)
 
 	world.Add(&s1)
 	world.Add(&s2)
+	world.Add(&s3)
+	// world.Add(&sky)
+	// world.Add(&q1)
 
-	return world
+	return world, c
 
 }

@@ -7,9 +7,26 @@ import (
 	. "raytracer/objects"
 )
 
-func RandomSpheres() Hittable_list {
+func RandomSpheres() (Hittable_list, Camera) {
 
 	var world Hittable_list
+
+	cam := NewCamera()
+
+	cam.Aspect_ratio = 16.0 / 9.0
+	cam.Image_width = 400
+	cam.Sample_per_pixel = 70
+	cam.Max_depth = 20
+
+	cam.Vfov = 20
+	cam.Look_from = NewPoint3(13, 2, 3)
+	cam.Look_at = NewPoint3(0, 0, 0)
+	cam.Vup = NewVec3(0, 1, 0)
+
+	cam.Defocus_angle = 0.6
+	cam.Focus_dist = 10.0
+	cam.Background = NewColor(0.6, 0.6, 0.6)
+	cam.Log_scanlines = true
 
 	for a := -11; a < 11; a++ {
 		for b := -11; b < 11; b++ {
@@ -50,7 +67,8 @@ func RandomSpheres() Hittable_list {
 	}
 
 	material1 := NewDielectric(1.5)
-	material2 := NewLambertian(NewColor(0.4, 0.2, 0.1))
+	// material2 := NewLambertian(NewColor(0.4, 0.2, 0.1))
+	material2 := NewDiffuse_light(NewColor(4, 4, 4))
 	material3 := NewMetal(NewColor(0.7, 0.6, 0.5), 0.0)
 
 	s1 := NewSphere(NewPoint3(0, 1, 0), 1.0, &material1)
@@ -71,6 +89,6 @@ func RandomSpheres() Hittable_list {
 	ground := NewSphere(NewPoint3(0, -1000, 0), 1000, &checkerLambertian)
 	world.Add(&ground)
 
-	return world
+	return world, cam
 
 }

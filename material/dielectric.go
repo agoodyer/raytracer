@@ -52,3 +52,7 @@ func reflectance(cosine float64, ref_idx float64) float64 {
 	r0 = r0 * r0
 	return r0 + (1-r0)*math.Pow(1-cosine, 5)
 }
+
+func (d *Dielectric) Emitted(u float64, v float64, p *Point3) Color {
+	return NewColor(0, 0, 0)
+}
