@@ -48,3 +48,8 @@ func (i *Interval) Expand(delta float64) Interval {
 func (i *Interval) Size() float64 {
 	return i.Max - i.Min
 }
+
+func (i *Interval) Add(offset float64) Interval {
+
+	return NewInterval(i.Min+offset, i.Max+offset)
+}

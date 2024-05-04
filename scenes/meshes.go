@@ -13,8 +13,8 @@ func Meshes() (Hittable_list, Camera) {
 
 	cam.Aspect_ratio = 16.0 / 9.0
 	cam.Image_width = 300
-	cam.Sample_per_pixel = 1
-	cam.Max_depth = 4
+	cam.Sample_per_pixel = 15
+	cam.Max_depth = 6
 
 	cam.Vfov = 50
 	cam.Look_from = NewPoint3(40, 42, 80)
@@ -26,10 +26,17 @@ func Meshes() (Hittable_list, Camera) {
 
 	cam.Background = NewColor(0.05, 0.05, 0.2)
 
-	green := NewLambertian(NewColor(0.9, 0.9, 0.8))
-	gg := NewMeshFromFile("assets/mac.stl", &green)
+	c1 := NewColor(0.2, 0.3, 0.1)
+	c2 := NewColor(0.9, 0.9, 0.9)
+	checker := NewChecker_texture(7.32, &c1, &c2)
+	checkerLambertian := NewTexturedLambertian(&checker)
 
-	world.Add(&gg)
+	// green := NewLambertian(NewColor(0.9, 0.9, 0.8))
+	gg := NewMeshFromFile("assets/vase.stl", &checkerLambertian, 1.6)
+
+	bvh := NewBvh(gg.Objects)
+
+	world.Add(&bvh)
 
 	sun_surface := NewDiffuse_light(NewColor(6, 6, 6))
 	s3 := NewSphere(NewPoint3(-25, 77, 4), 40, &sun_surface)

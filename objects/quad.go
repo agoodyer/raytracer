@@ -63,7 +63,7 @@ func (quad *Quad) Hit(r *Ray, ray_t Interval, rec *Hit_record) bool {
 
 	rec.T = t
 	rec.P = intersection
-	rec.Mat = quad.mat
+	rec.Mat = &quad.mat
 	rec.Set_face_normal(r, quad.normal)
 
 	// fmt.Print("!!!!")
@@ -152,7 +152,7 @@ func (tri *Tri) Hit(r *Ray, ray_t Interval, rec *Hit_record) bool {
 
 	rec.T = t
 	rec.P = intersection
-	rec.Mat = tri.q.mat
+	rec.Mat = &tri.q.mat
 	rec.Set_face_normal(r, tri.q.normal)
 
 	// fmt.Print("!!!!")

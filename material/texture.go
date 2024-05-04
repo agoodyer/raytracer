@@ -47,10 +47,10 @@ func NewChecker_texture(scale float64, c1 *Color, c2 *Color) Checker_texture {
 func (t *Checker_texture) Value(u float64, v float64, p *Point3) Color {
 
 	xInteger := int(math.Floor(t.inv_scale * p.X()))
-	// yInteger := int(math.Floor(t.inv_scale * p.Y()))
+	yInteger := int(math.Floor(t.inv_scale * p.Y()))
 	zInteger := int(math.Floor(t.inv_scale * p.Z()))
 
-	isEven := (xInteger+zInteger)%2 == 0
+	isEven := (xInteger+zInteger+yInteger)%2 == 0
 
 	if isEven {
 		return t.even.Value(u, v, p)

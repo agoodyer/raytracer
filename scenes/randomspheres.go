@@ -15,8 +15,8 @@ func RandomSpheres() (Hittable_list, Camera) {
 
 	cam.Aspect_ratio = 16.0 / 9.0
 	cam.Image_width = 400
-	cam.Sample_per_pixel = 70
-	cam.Max_depth = 20
+	cam.Sample_per_pixel = 32
+	cam.Max_depth = 30
 
 	cam.Vfov = 20
 	cam.Look_from = NewPoint3(13, 2, 3)

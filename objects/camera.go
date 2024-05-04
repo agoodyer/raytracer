@@ -9,7 +9,6 @@ import (
 	"os"
 	. "raytracer/common"
 	. "raytracer/material"
-	"sync"
 	"time"
 )
 
@@ -160,33 +159,87 @@ func (c *Camera) Render(world Hittable) {
 
 }
 
-func (c *Camera) renderBlock(startLine int, numLines int, world Hittable, img *image.RGBA, wg *sync.WaitGroup) {
+type Chunk struct {
+	world *Hittable
+	rect  image.Rectangle
+}
 
-	defer wg.Done()
+func (c *Camera) renderChunk(chunk Chunk, img *image.RGBA) {
 
-	for j := startLine; j < startLine+numLines; j++ {
+	for j := chunk.rect.Bounds().Min.Y; j < chunk.rect.Bounds().Max.Y; j++ {
 
-		for i := 0; i < c.Image_width; i++ {
+		// cmd := exec.Command("cmd", "/c", "cls") // Windows system
+		// cmd.Stdout = os.Stdout
+		// cmd.Run()
+		// fmt.Println(float64(j) / float64(chunk.rect.Bounds().Max.Y) * 100)
+		for i := chunk.rect.Bounds().Min.X; i < chunk.rect.Bounds().Max.X; i++ {
 
 			pixel_color := NewColor(0, 0, 0)
 
 			for sample := 0; sample < c.Sample_per_pixel; sample++ {
 				r := c.get_ray(i, j)
-				pixel_color = pixel_color.Add(ray_color(c, &r, c.Max_depth, world))
-				// logger.Print(pixel_color)
+				pixel_color = pixel_color.Add(ray_color(c, &r, c.Max_depth, *chunk.world))
 			}
-
-			// pixel_center := c.pixel00_loc.Add(c.pixel_delta_u.Mult(float64(i)).Add(c.pixel_delta_v.Mult(float64(j))))
-			// Ray_direction := pixel_center.Sub(c.center)
-			// r := NewRay(c.center, Ray_direction)
-			// // logger.Print(c.pixel_delta_u)
-			// pixel_color := ray_color(r, world)
-
 			Write_color(pixel_color, c.Sample_per_pixel, img, i, j)
 
 		}
 
 	}
+
+}
+
+func (c *Camera) Chunk_image(n int, world Hittable) []Chunk {
+
+	var chunks []Chunk
+
+	chunk_size := c.image_height / n
+
+	for i := 0; i < n; i++ {
+		chunks = append(chunks, Chunk{rect: image.Rect(0, i*chunk_size, c.Image_width, i*(chunk_size+1)), world: &world})
+	}
+
+	return chunks
+}
+
+func worker(c *Camera, chunk *Chunk, img *image.RGBA, done chan bool) {
+	c.renderChunk(*chunk, img)
+	fmt.Print("done!")
+	done <- true
+}
+
+func (c *Camera) RenderMultithreaded(world Hittable) {
+
+	start := time.Now()
+
+	c.initialize()
+	img := image.NewRGBA(image.Rect(0, 0, c.Image_width, c.image_height))
+
+	done := make(chan bool)
+
+	n_threads := 10
+
+	for i := 0; i < n_threads; i++ {
+		chunk := Chunk{rect: image.Rect(0, i*c.image_height/n_threads, c.Image_width, (i+1)*c.image_height/n_threads), world: &world}
+		go worker(c, &chunk, img, done)
+	}
+
+	for i := 0; i < n_threads; i++ {
+		<-done
+	}
+
+	file, err := os.Create("output.png")
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	// Encode the image to PNG and save to the file
+	if err := png.Encode(file, img); err != nil {
+		panic(err)
+	}
+
+	elapsed := time.Since(start)
+	fmt.Print("~~~~~~~~~~~~~~~~~~~~~~~~~~\nElapsed Time: ", elapsed, "\n~~~~~~~~~~~~~~~~~~~~~~~~~~\n")
 
 }
 
@@ -208,9 +261,11 @@ func ray_color(c *Camera, r *Ray, depth int, world Hittable) Color {
 	var scattered Ray
 	var attenuation Color
 
-	color_from_emission := rec.Mat.Emitted(rec.U, rec.V, &rec.P)
+	m := *rec.Mat
 
-	if !rec.Mat.Scatter(r, &rec, &attenuation, &scattered) {
+	color_from_emission := m.Emitted(rec.U, rec.V, &rec.P)
+
+	if !m.Scatter(r, &rec, &attenuation, &scattered) {
 		return color_from_emission
 	}
 

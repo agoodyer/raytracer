@@ -11,7 +11,7 @@ import (
 	. "raytracer/material"
 )
 
-func NewMeshFromFile(path string, material Material) Hittable_list {
+func NewMeshFromFile(path string, material Material, scale float64) Hittable_list {
 
 	var triangles Hittable_list
 
@@ -68,7 +68,7 @@ func NewMeshFromFile(path string, material Material) Hittable_list {
 
 			// green := NewLambertian(NewColor(0.12, 0.45, 0.15))
 			// red := NewLambertian(NewColor(0.72, 0.25, 0.15))
-			tri := Triangle(a, b, c, material)
+			tri := Triangle(a.Mult(scale), b.Mult(scale), c.Mult(scale), material)
 
 			// v1 := NewSphere(a, 0.5, &green)
 			// v2 := NewSphere(b, 0.5, &green)

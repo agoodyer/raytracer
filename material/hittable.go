@@ -7,7 +7,7 @@ import (
 type Hit_record struct {
 	P          Point3
 	Normal     Vec3
-	Mat        Material
+	Mat        *Material
 	T          float64
 	U, V       float64
 	Front_face bool

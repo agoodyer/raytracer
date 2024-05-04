@@ -14,8 +14,8 @@ func Texturedspheres() (Hittable_list, Camera) {
 	c.Aspect_ratio = 16.0 / 9.0
 	c.Image_width = 1920
 
-	c.Sample_per_pixel = 500 //250
-	c.Max_depth = 50         //50
+	c.Sample_per_pixel = 50 //250
+	c.Max_depth = 30        //50
 
 	c.Vfov = 68
 	c.Look_from = NewPoint3(14, 12, -5)
@@ -46,12 +46,12 @@ func Texturedspheres() (Hittable_list, Camera) {
 	// sky_tex := NewImage_texture("assets/expsky2.png")
 	// sky_surface := NewTexturedDiffuse_Light(&sky_tex, 0.4)
 
-	sun_surface := NewDiffuse_light(NewColor(8, 8, 8))
+	sun_surface := NewDiffuse_light(NewColor(18, 18, 18))
 
 	s1 := NewSphere(NewPoint3(0, -10, 0), 8.0, &earth_surface)
 	s2 := NewSphere(NewPoint3(0, 6, -5), 2.0, &moon_surface)
 
-	s3 := NewSphere(NewPoint3(14000, 16000, 34000), 2000, &sun_surface)
+	s3 := NewSphere(NewPoint3(1400, 1600, 3400), 2000, &sun_surface)
 
 	// q1 := NewQuad(NewPoint3(-3, -2, 5), NewVec3(0, 0, -4), NewVec3(0, 4, 0), &earth_surface)
 

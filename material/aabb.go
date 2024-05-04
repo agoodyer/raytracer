@@ -140,3 +140,7 @@ func (a *Aabb) introduce_padding() {
 		a.z = a.z.Expand(delta)
 	}
 }
+
+func (a *Aabb) Add(offset Vec3) Aabb {
+	return NewAabb(a.x.Add(offset.X()), a.y.Add(offset.Y()), a.z.Add(offset.Z()))
+}

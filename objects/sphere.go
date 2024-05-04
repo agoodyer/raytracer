@@ -55,7 +55,7 @@ func (s *Sphere) Hit(r *Ray, ray_t Interval, rec *Hit_record) bool {
 
 	// fmt.Print(rec.U, rec.V, "\n")
 
-	rec.Mat = s.Mat
+	rec.Mat = &s.Mat
 
 	return true
 
