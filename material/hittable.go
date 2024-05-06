@@ -45,7 +45,7 @@ func (l *Hittable_list) clear() {
 	l.Objects = l.Objects[:0]
 }
 
-func (l *Hittable_list) Hit(r *Ray, ray_t Interval, rec *Hit_record) bool {
+func (l Hittable_list) Hit(r *Ray, ray_t Interval, rec *Hit_record) bool {
 
 	var temp_rec Hit_record
 	hit_anything := false
@@ -65,6 +65,6 @@ func (l *Hittable_list) Hit(r *Ray, ray_t Interval, rec *Hit_record) bool {
 
 }
 
-func (l *Hittable_list) Bounding_box() Aabb {
+func (l Hittable_list) Bounding_box() Aabb {
 	return l.bbox
 }

@@ -144,3 +144,15 @@ func (a *Aabb) introduce_padding() {
 func (a *Aabb) Add(offset Vec3) Aabb {
 	return NewAabb(a.x.Add(offset.X()), a.y.Add(offset.Y()), a.z.Add(offset.Z()))
 }
+
+func (a *Aabb) X() Interval {
+	return a.x
+}
+
+func (a *Aabb) Y() Interval {
+	return a.y
+}
+
+func (a *Aabb) Z() Interval {
+	return a.z
+}

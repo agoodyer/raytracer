@@ -51,7 +51,7 @@ func Texturedspheres() (Hittable_list, Camera) {
 	s1 := NewSphere(NewPoint3(0, -10, 0), 8.0, &earth_surface)
 	s2 := NewSphere(NewPoint3(0, 6, -5), 2.0, &moon_surface)
 
-	s3 := NewSphere(NewPoint3(1400, 1600, 3400), 2000, &sun_surface)
+	s3 := NewSphere(NewPoint3(1400, 1600, 3400), 20000, &sun_surface)
 
 	// q1 := NewQuad(NewPoint3(-3, -2, 5), NewVec3(0, 0, -4), NewVec3(0, 4, 0), &earth_surface)
 

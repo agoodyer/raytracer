@@ -62,11 +62,11 @@ func NewBvhNode(objects []Hittable, start int, end int) Bvh {
 
 }
 
-func (bvh *Bvh) Bounding_box() Aabb {
+func (bvh Bvh) Bounding_box() Aabb {
 	return bvh.bbox
 }
 
-func (bvh *Bvh) Hit(r *Ray, ray_t Interval, rec *Hit_record) bool {
+func (bvh Bvh) Hit(r *Ray, ray_t Interval, rec *Hit_record) bool {
 
 	if !bvh.bbox.Hit(r, &ray_t) {
 		return false

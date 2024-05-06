@@ -13,8 +13,8 @@ func Meshes() (Hittable_list, Camera) {
 
 	cam.Aspect_ratio = 16.0 / 9.0
 	cam.Image_width = 300
-	cam.Sample_per_pixel = 15
-	cam.Max_depth = 6
+	cam.Sample_per_pixel = 1
+	cam.Max_depth = 4
 
 	cam.Vfov = 50
 	cam.Look_from = NewPoint3(40, 42, 80)
@@ -32,11 +32,12 @@ func Meshes() (Hittable_list, Camera) {
 	checkerLambertian := NewTexturedLambertian(&checker)
 
 	// green := NewLambertian(NewColor(0.9, 0.9, 0.8))
-	gg := NewMeshFromFile("assets/vase.stl", &checkerLambertian, 1.6)
-
+	gg := NewMeshFromFile("assets/giraffe.stl", &checkerLambertian, 1.0)
 	bvh := NewBvh(gg.Objects)
 
-	world.Add(&bvh)
+	abc := NewRotationY(bvh, 0)
+
+	world.Add(&abc)
 
 	sun_surface := NewDiffuse_light(NewColor(6, 6, 6))
 	s3 := NewSphere(NewPoint3(-25, 77, 4), 40, &sun_surface)

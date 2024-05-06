@@ -33,6 +33,7 @@ type Camera struct {
 	defocus_disk_v   Vec3
 	Background       Color
 	Log_scanlines    bool
+	// SkySphere        Sphere
 }
 
 func NewCamera() Camera {
@@ -216,14 +217,14 @@ func (c *Camera) RenderMultithreaded(world Hittable) {
 
 	done := make(chan bool)
 
-	n_threads := 10
+	n_processes := 24
 
-	for i := 0; i < n_threads; i++ {
-		chunk := Chunk{rect: image.Rect(0, i*c.image_height/n_threads, c.Image_width, (i+1)*c.image_height/n_threads), world: &world}
+	for i := 0; i < n_processes; i++ {
+		chunk := Chunk{rect: image.Rect(0, i*c.image_height/n_processes, c.Image_width, (i+1)*c.image_height/n_processes), world: &world}
 		go worker(c, &chunk, img, done)
 	}
 
-	for i := 0; i < n_threads; i++ {
+	for i := 0; i < n_processes; i++ {
 		<-done
 	}
 
@@ -252,6 +253,9 @@ func ray_color(c *Camera, r *Ray, depth int, world Hittable) Color {
 
 	if !world.Hit(r, NewInterval(0.001, Infinity), &rec) {
 		return c.Background
+
+		// return c.SkySphere.Mat.
+
 	}
 
 	// direction := rec.Normal.Add(Random_unit_vector())

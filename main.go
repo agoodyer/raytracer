@@ -31,13 +31,13 @@ func main() {
 
 	// world, cam = scenes.RandomSpheres()
 	// world, cam = scenes.Texturedspheres()
-	// // world = scenes.Earth()
+	world, cam = scenes.Earth()
 
 	// world, cam = scenes.Quads()
 
 	// world, cam = scenes.Boxes()
 
-	world, cam = scenes.Meshes()
+	// world, cam = scenes.Meshes()
 
 	bvh := NewBvh(world.Objects)
 	cam.RenderMultithreaded(&bvh)

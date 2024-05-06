@@ -15,8 +15,8 @@ func RandomSpheres() (Hittable_list, Camera) {
 
 	cam.Aspect_ratio = 16.0 / 9.0
 	cam.Image_width = 400
-	cam.Sample_per_pixel = 32
-	cam.Max_depth = 30
+	cam.Sample_per_pixel = 50
+	cam.Max_depth = 20
 
 	cam.Vfov = 20
 	cam.Look_from = NewPoint3(13, 2, 3)
@@ -67,8 +67,7 @@ func RandomSpheres() (Hittable_list, Camera) {
 	}
 
 	material1 := NewDielectric(1.5)
-	// material2 := NewLambertian(NewColor(0.4, 0.2, 0.1))
-	material2 := NewDiffuse_light(NewColor(4, 4, 4))
+	material2 := NewLambertian(NewColor(0.4, 0.2, 0.1))
 	material3 := NewMetal(NewColor(0.7, 0.6, 0.5), 0.0)
 
 	s1 := NewSphere(NewPoint3(0, 1, 0), 1.0, &material1)
@@ -88,6 +87,13 @@ func RandomSpheres() (Hittable_list, Camera) {
 	checkerLambertian := NewTexturedLambertian(&checker)
 	ground := NewSphere(NewPoint3(0, -1000, 0), 1000, &checkerLambertian)
 	world.Add(&ground)
+
+	sky_tex := NewImage_texture("assets/skysphere.jpg")
+	sky_mat := NewTexturedDiffuse_Light(&sky_tex, 2.5)
+
+	sky := NewSphere(NewPoint3(0, 0, 0), 10000, &sky_mat)
+
+	world.Add(&sky)
 
 	return world, cam
 
