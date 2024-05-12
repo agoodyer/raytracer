@@ -31,5 +31,5 @@ Raytracing is a computationally-expensive and math heavy task. My motivation to 
 
 CPU Profiling Info 
 
-![CPU Profile for Mesh Render](/sample_renders/Profiling.svg)
+![CPU Profile for Mesh Render](/sample_renders/cpu_profiling.svg)
 
