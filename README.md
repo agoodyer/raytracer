@@ -29,7 +29,12 @@ Raytracing is a computationally-expensive and math heavy task. My motivation to 
 - Supports both single-threaded and multi-threaded rendering modes
 - Implements a Bounding Volume Hierarchy structure to improve performance on complex scenes
 
-CPU Profiling Info 
+## CPU Profiling Info 
+
+Observing the CPU Profiling info, we can see most of the render time is spent calculating Ray-Surface collisions, which is to be expected since this is fundamental to the raytracing process. We can also see that the Go Compiler has performed some clever inlining of common math functions in the project, including Dot Products, and Interval Checks. 
+
+
+This Profiling information comes from the render of an STL File at high-resolution and high sample count. 
 
 ![CPU Profile for Mesh Render](/sample_renders/cpu_profiling.svg)
 
