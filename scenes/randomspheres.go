@@ -14,7 +14,7 @@ func RandomSpheres() (Hittable_list, Camera) {
 	cam := NewCamera()
 
 	cam.Aspect_ratio = 16.0 / 9.0
-	cam.Image_width = 400
+	cam.Image_width = 1200
 	cam.Sample_per_pixel = 50
 	cam.Max_depth = 20
 
@@ -87,13 +87,6 @@ func RandomSpheres() (Hittable_list, Camera) {
 	checkerLambertian := NewTexturedLambertian(&checker)
 	ground := NewSphere(NewPoint3(0, -1000, 0), 1000, &checkerLambertian)
 	world.Add(&ground)
-
-	sky_tex := NewImage_texture("assets/skysphere.jpg")
-	sky_mat := NewTexturedDiffuse_Light(&sky_tex, 2.5)
-
-	sky := NewSphere(NewPoint3(0, 0, 0), 10000, &sky_mat)
-
-	world.Add(&sky)
 
 	return world, cam
 

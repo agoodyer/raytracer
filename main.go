@@ -1,37 +1,21 @@
 package main
 
 import (
-	"os"
 	. "raytracer/material"
-	"raytracer/scenes"
-	"runtime/pprof"
-
 	. "raytracer/objects"
+	"raytracer/scenes"
 )
 
 func main() {
-
-	// Start CPU profiling.
-	f, err := os.Create("cpu.prof")
-	if err != nil {
-		panic(err)
-	}
-	defer f.Close()
-
-	if err := pprof.StartCPUProfile(f); err != nil {
-		panic(err)
-	}
-
-	defer pprof.StopCPUProfile()
 
 	//MAIN CODE
 
 	var world Hittable_list
 	var cam Camera
 
-	// world, cam = scenes.RandomSpheres()
-	// world, cam = scenes.Texturedspheres()
-	world, cam = scenes.Earth()
+	world, cam = scenes.RandomSpheres()
+	// world, cam = scenes.Planet()
+	// world, cam = scenes.Earth()
 
 	// world, cam = scenes.Quads()
 
@@ -41,18 +25,5 @@ func main() {
 
 	bvh := NewBvh(world.Objects)
 	cam.RenderMultithreaded(&bvh)
-
-	// END MAIN CODE
-
-	// Generate heap profile
-	h, err := os.Create("heap.prof")
-	if err != nil {
-		panic(err)
-	}
-	defer h.Close()
-
-	if err := pprof.WriteHeapProfile(h); err != nil {
-		panic(err)
-	}
 
 }
